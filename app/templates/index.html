@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>FastAPI Test App</h1>
+
+    <section class="card">
+      <h2>Health</h2>
+      <button id="healthBtn">Check Health</button>
+      <pre id="healthResult" class="result">Click the button to check health...</pre>
+    </section>
+
+    <section class="card">
+      <h2>Echo</h2>
+      <form id="echoForm">
+        <label for="message">Message</label>
+        <input id="message" name="message" type="text" placeholder="Type something..." required />
+        <button type="submit">Send</button>
+      </form>
+      <pre id="echoResult" class="result">Submit a message to see the echo...</pre>
+    </section>
+  </main>
+
+  <script>
+    const healthBtn = document.getElementById('healthBtn');
+    const healthResult = document.getElementById('healthResult');
+    const echoForm = document.getElementById('echoForm');
+    const echoResult = document.getElementById('echoResult');
+
+    healthBtn.addEventListener('click', async () => {
+      healthResult.textContent = 'Checking...';
+      try {
+        const res = await fetch('/api/health');
+        const data = await res.json();
+        healthResult.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        healthResult.textContent = 'Error: ' + err.message;
+      }
+    });
+
+    echoForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      echoResult.textContent = 'Sending...';
+      const message = document.getElementById('message').value;
+      try {
+        const res = await fetch('/api/echo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+        const data = await res.json();
+        echoResult.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        echoResult.textContent = 'Error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
